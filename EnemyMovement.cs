@@ -31,7 +31,7 @@ public class EnemyMovement : MonoBehaviour
     public void Flip()
     {
         movingRight = !movingRight;
-
+        rb.velocity = Vector2.zero;
         Vector3 theScale = transform.localScale;
         theScale.x *= -1;
         transform.localScale = theScale;
