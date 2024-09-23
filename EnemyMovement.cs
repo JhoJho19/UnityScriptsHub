@@ -25,7 +25,7 @@ public class EnemyMovement : MonoBehaviour
             force = Vector2.left;
         }
 
-        rb.AddForce(force * speed * Time.fixedDeltaTime, ForceMode2D.Impulse);
+        rb.AddForce(force * speed * Time.fixedDeltaTime, ForceMode2D.Force);
     }
 
     public void Flip()
