@@ -1,0 +1,72 @@
+using UnityEngine;
+
+[RequireComponent(typeof(Rigidbody))]
+public class RunnerController : MonoBehaviour
+{
+    private Rigidbody _rigidBody;
+    private Camera _mainCam;
+    private Plane _plane;
+
+    private Vector3 _oldPosition;
+
+    [SerializeField] private float forwardSpeed = 5f;
+    [SerializeField] private float minX = -2f;
+    [SerializeField] private float maxX = 2f;
+
+    private bool _isPressed = false;
+
+    private void Awake()
+    {
+        _rigidBody = GetComponent<Rigidbody>();
+        _mainCam = Camera.main;
+        _plane = new Plane(Vector3.up, Vector3.zero);
+    }
+
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            _oldPosition = GetMousePoint();
+            _isPressed = true;
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            _isPressed = false;
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        Vector3 velocity;
+
+        if (_isPressed)
+        {
+            Vector3 delta = GetMousePoint() - _oldPosition;
+            _oldPosition = GetMousePoint();
+
+            float xVelocity = delta.x / Time.fixedDeltaTime;
+
+            float newXPosition = Mathf.Clamp(_rigidBody.position.x + xVelocity * Time.fixedDeltaTime, minX, maxX);
+
+            velocity = new Vector3((newXPosition - _rigidBody.position.x) / Time.fixedDeltaTime, _rigidBody.velocity.y, forwardSpeed);
+        }
+        else
+        {
+            velocity = new Vector3(0, _rigidBody.velocity.y, forwardSpeed);
+        }
+
+        _rigidBody.velocity = velocity;
+    }
+
+    private Vector3 GetMousePoint()
+    {
+        Ray ray = _mainCam.ScreenPointToRay(Input.mousePosition);
+        if (_plane.Raycast(ray, out float enter))
+        {
+            return ray.GetPoint(enter);
+        }
+
+        return Vector3.zero;
+    }
+}
