@@ -1,0 +1,45 @@
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
+
+public class SoundSettingsMenu : MonoBehaviour
+{
+    [SerializeField] private AudioMixer audioMixer;
+    [SerializeField] private Scrollbar musicScrollbar;
+    [SerializeField] private Scrollbar sfxScrollbar;
+
+    private const string MusicVolumeKey = "Music";
+    private const string SFXVolumeKey = "SFX";
+
+    private void Start()
+    {
+        float musicVolume = PlayerPrefs.GetFloat(MusicVolumeKey, 0.75f);
+        float sfxVolume = PlayerPrefs.GetFloat(SFXVolumeKey, 0.75f);
+
+        musicScrollbar.value = musicVolume;
+        sfxScrollbar.value = sfxVolume;
+
+        SetMusicVolume(musicVolume);
+        SetSFXVolume(sfxVolume);
+
+        musicScrollbar.onValueChanged.AddListener(SetMusicVolume);
+        sfxScrollbar.onValueChanged.AddListener(SetSFXVolume);
+    }
+
+    public void SetMusicVolume(float volume)
+    {
+        Debug.Log("Music Volume: " + volume);
+        float volumeInDB = volume > 0 ? Mathf.Log10(volume) * 20 : -80;
+        audioMixer.SetFloat(MusicVolumeKey, volumeInDB);
+        PlayerPrefs.SetFloat(MusicVolumeKey, volume);
+    }
+
+    public void SetSFXVolume(float volume)
+    {
+        Debug.Log("SFX Volume: " + volume);
+        float volumeInDB = volume > 0 ? Mathf.Log10(volume) * 20 : -80;
+        audioMixer.SetFloat(SFXVolumeKey, volumeInDB);
+        PlayerPrefs.SetFloat(SFXVolumeKey, volume);
+    }
+}
